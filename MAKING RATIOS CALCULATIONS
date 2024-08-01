@@ -1,0 +1,246 @@
+/* WHAT THE PROGRAM DOES : The program will ask the user to choose an operation that user wants to apply on ratio objects 
+and then should print the result accordingly. Increment and decrement operations should be applied on only one object
+of user’s choice (as these are unary operation). After every operation result, the program should
+ask user if user wants to apply another operation. Simplification of ratio after any operation
+through greatest common divisor is also required */
+
+#include <iostream>
+using namespace std;
+class Ratio {
+private:
+int numerator;
+int denominator;
+public:
+Ratio() : numerator(1), denominator(1) {} 
+Ratio(int number, int denom1) : numerator(number), denominator(denom1) {}
+Ratio operator+(const Ratio& other) const {
+int number = numerator * other.denominator + other.numerator * denominator;
+int denom1 = denominator * other.denominator;
+simplify(number, denom1);
+return Ratio(number, denom1);
+}
+Ratio operator-(const Ratio& other) const {
+int number = numerator * other.denominator - other.numerator * denominator;
+int denom1 = denominator * other.denominator;
+simplify(number, denom1);
+return Ratio(number, denom1)
+}
+Ratio operator*(const Ratio& other) const {
+int number = numerator * other.numerator;
+int denom1 = denominator * other.denominator;
+simplify(number, denom1);
+return Ratio(number, denom1);
+}
+Ratio operator/(const Ratio& other) const {
+int number = numerator * other.denominator;
+int denom1 = denominator * other.numerator;
+simplify(number, denom1);
+return Ratio(number, denom1);
+}
+Ratio& operator++() {
+ 
+numerator += denominator;
+ 
+simplify(numerator, denominator);
+ 
+return *this;
+ 
+}
+ 
+Ratio operator++(int) {
+ 
+Ratio temperature = *this;
+ 
+++(*this);
+ 
+return temperature;
+ 
+}
+ 
+Ratio& operator--() {
+ 
+numerator -= denominator;
+ 
+simplify(numerator, denominator);
+ 
+return *this;
+ 
+}
+ 
+Ratio operator--(int) {
+ 
+Ratio temperature = *this;
+ 
+--(*this);
+ 
+return temperature;
+ 
+}
+ 
+friend ostream& operator<<(ostream& out, const Ratio& ratio) {
+ 
+out << ratio.numerator << "/" << ratio.denominator;
+ 
+return out;
+ 
+}
+ 
+friend istream& operator>>(istream& in, Ratio& ratio) {
+ 
+cout << "Enter numerator: ";
+ 
+in >> ratio.numerator;
+ 
+cout << "Enter denominator: ";
+ 
+in >> ratio.denominator;
+ 
+return in;
+ 
+}
+private:
+ 
+void simplify(int& number, int& denom1) const {
+ 
+int gcd_val = gcd(number, denom1);
+ 
+number /= gcd_val;
+ 
+denom1 /= gcd_val;
+ 
+}
+
+ 
+int gcd(int a, int b) const {
+ 
+while (b != 0) {
+ 
+int temperature = b;
+ 
+b = a % b;
+ 
+a = temperature;
+ 
+}
+ 
+return a;
+ 
+}
+};
+int main() 
+{
+ 
+Ratio ratio1, ratio2;
+ 
+int options;
+ 
+cout << "Please enter data for 1st ratio:" << endl;
+ 
+cin >> ratio1;
+ 
+cout << "Please enter data for 2nd ratio:" << endl;
+ 
+cin >> ratio2;
+ 
+cout << "Ratio 1 is: " << ratio1 << endl;
+ 
+cout << "Ratio 2 is: " << ratio2 << endl;
+ 
+cout << "What would you like to do with these ratios?" << endl;
+ 
+cout << "Menu:" << endl;
+ 
+cout << "Press 1 for addition." << endl;
+ 
+cout << "Press 2 for subtraction." << endl;
+ 
+cout << "Press 3 for multiplication." << endl;
+ 
+cout << "Press 4 for division." << endl;
+ 
+cout << "Press 5 for increment." << endl;
+ 
+cout << "Press 6 for decrement." << endl;
+ 
+cout << "Enter your option: ";
+ 
+cin >> options;
+ 
+Ratio result;
+ 
+switch (options) {
+ 
+case 1:
+ 
+result = ratio1 + ratio2;
+ 
+cout << "You have chosen addition." << endl;
+ 
+cout << "The result is: " << ratio1 << " + " << ratio2 << " = " << result 
+<< endl;
+ 
+break;
+ 
+case 2:
+ 
+result = ratio1 - ratio2;
+ 
+cout << "You have chosen subtraction." << endl;
+ 
+cout << "the result is: " << ratio1 << " - " << ratio2 << " = " << result 
+<< endl;
+
+ 
+break;
+ 
+case 3:
+ 
+result = ratio1 * ratio2;
+ 
+cout << "You have chosen multplication." << endl;
+ 
+cout << "The result is: " << ratio1 << " * " << ratio2 << " = " << result 
+<< endl;
+ 
+break;
+ 
+case 4:
+ 
+result = ratio1 / ratio2;
+ 
+cout << "You have chosen division." << endl;
+ 
+cout << "The result is: " << ratio1 << " / " << ratio2 << " = " << result 
+<< endl;
+ 
+break;
+ 
+case 5:
+ 
+++ratio1;
+ 
+cout << "You have chosen increment." << endl;
+ 
+cout << "reesult after incrementing Ratio 1: " << ratio1 << endl;
+ 
+break;
+ 
+case 6:
+ 
+--ratio2;
+ 
+cout << "You have chosen decrement." << endl;
+ 
+cout << "result after after decrementing Ratio 2: " << ratio2 << endl;
+ 
+break;
+ 
+default:
+ 
+cout << "error" << endl;
+ 
+}
+ 
+return 0;
+}
+
