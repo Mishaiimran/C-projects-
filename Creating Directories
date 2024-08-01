@@ -1,0 +1,364 @@
+/*
+The operations include creating taxi objects, saving them to a file, displaying them, adding fare information, and resetting fare information.
+
+*/
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <iomanip>
+using namespace std;
+class Vehicle {
+protected:
+string make;
+ 
+string model;
+ 
+int year;
+ 
+int mileage;
+ 
+string plateNumber;
+ 
+int numSeats;
+public:
+ 
+ 
+Vehicle(string make, string model, int year, int mileage, string plateNumber, int numSeats)
+ 
+: make(make), model(model), year(year), mileage(mileage), plateNumber(plateNumber), numSeats(numSeats) {}
+ 
+ 
+Vehicle(string make, string model, int year, int numSeats)
+ 
+: make(make), model(model), year(year), mileage(0), plateNumber("NA"), numSeats(numSeats) {}
+ 
+ 
+string getMake() const { return make; }
+ 
+string getModel() const { return model; }
+ 
+int getYear() const { return year; }
+ 
+int getMileage() const { return mileage; }
+ 
+string getPlateNumber() const { return plateNumber; }
+ 
+int getNumSeats() const { return numSeats; }
+ 
+ 
+void setPlateNumber(string plateNumber) { this->plateNumber = plateNumber; }
+};
+class Taxi : public Vehicle {
+private:
+ 
+string taxiId;
+ 
+double fareTotal;
+ 
+int numOfFares;
+public:
+ 
+ 
+Taxi(string make, string model, int year, int mileage, string plateNumber, int numSeats, string taxiId, double fareTotal = 0.0, int 
+numOfFares = 0)
+ 
+: Vehicle(make, model, year, mileage, plateNumber, numSeats), taxiId(taxiId), fareTotal(fareTotal), numOfFares(numOfFares) {}
+ 
+ 
+string getID() const { return taxiId; }
+ 
+void setID(string taxiId) { this->taxiId = taxiId; }
+ 
+double getFareTotal() const { return fareTotal; }
+ 
+void addFare(double fare) { fareTotal += fare; numOfFares++; }
+ 
+int getNumOfFares() const { return numOfFares; }
+ 
+void resetFareInfo() { fareTotal = 0.0; numOfFares = 0; }
+ 
+ 
+friend ostream& operator<<(ostream& os, const Taxi& taxi);
+ 
+friend ofstream& operator<<(ofstream& ofs, const Taxi& taxi);
+ 
+friend ifstream& operator>>(ifstream& ifs, Taxi& taxi);
+};
+ostream& operator<<(ostream& os, const Taxi& taxi) {
+ 
+os << "Taxi ID: " << taxi.taxiId << ", Make: " << taxi.make << ", Model: " << taxi.model << ", Year: " << taxi.year
+ 
+<< ", Mileage: " << taxi.mileage << ", Plate Number: " << taxi.plateNumber << ", Num Seats: " << taxi.numSeats
+ 
+<< ", Fare Total: " << taxi.fareTotal << ", Num of Fares: " << taxi.numOfFares;
+ 
+return os;
+}
+ofstream& operator<<(ofstream& ofs, const Taxi& taxi) {
+ 
+ofs << taxi.make << ' ' << taxi.model << ' ' << taxi.year << ' ' << taxi.mileage << ' ' << taxi.plateNumber << ' '
+ 
+<< taxi.numSeats << ' ' << taxi.taxiId << ' ' << taxi.fareTotal << ' ' << taxi.numOfFares << '\n';
+ 
+return ofs;
+}
+ifstream& operator>>(ifstream& ifs, Taxi& taxi) {
+ 
+ifs >> taxi.make >> taxi.model >> taxi.year >> taxi.mileage >> taxi.plateNumber >> taxi.numSeats
+ 
+>> taxi.taxiId >> taxi.fareTotal >> taxi.numOfFares;
+ 
+return ifs;
+}
+void displayMenu() {
+
+ 
+cout << "\nMenu\n";
+ 
+cout << "1- Show Taxi List.\n";
+ 
+cout << "2- Add New Taxi.\n";
+ 
+cout << "3- Reset Taxi Fare Information.\n";
+ 
+cout << "4- Add to Total Fare of a Taxi.\n";
+ 
+cout << "Please enter an option: ";
+}
+void taxidisplay(const vector<Taxi>& taxis) {
+ 
+cout << left << setw(10) << "Sr.No" << setw(10) << "Make" << setw(10) << "Model" << setw(15) << "Plate Number"
+ 
+<< setw(10) << "Year" << setw(10) << "Mileage" << setw(10) << "Taxi ID" << setw(15) << "Number of Seats"
+ 
+<< setw(15) << "Number of Fares" << setw(15) << "Total Fare" << endl;
+ 
+for (size_t i = 0; i < taxis.size(); ++i) {
+ 
+cout << left << setw(10) << i + 1 << setw(10) << taxis[i].getMake() << setw(10) << taxis[i].getModel()
+ 
+<< setw(15) << taxis[i].getPlateNumber() << setw(10) << taxis[i].getYear() << setw(10) << taxis[i].getMileage()
+ 
+<< setw(10) << taxis[i].getID() << setw(15) << taxis[i].getNumSeats() << setw(15) << taxis[i].getNumOfFares()
+ 
+<< setw(15) << taxis[i].getFareTotal() << endl;
+ 
+}
+}
+void newtaxiadding(vector<Taxi>& taxis) {
+ 
+string make, model, plateNumber, taxiId;
+ 
+int year, mileage, numSeats;
+ 
+cout << "Please enter Taxi make: ";
+ 
+cin >> make;
+ 
+cout << "Please enter Taxi mdel: ";
+ 
+cin >> model;
+ 
+cout << "Please enter Taxi manufacturing year: ";
+ 
+cin >> year;
+ 
+cout << "Please enter Taxi mileage: ";
+ 
+cin >> mileage;
+ 
+cout << "Please enter Taaxi plate Number: ";
+ 
+cin >> plateNumber;
+ 
+cout << "Please enter Taxi number of seats: ";
+ 
+cin >> numSeats;
+ 
+cout << "Please enter Taxi ID: ";
+ 
+cin >> taxiId;
+ 
+Taxi newTaxi(make, model, year, mileage, plateNumber, numSeats, taxiId);
+ 
+taxis.push_back(newTaxi);
+ 
+ofstream outFile("taxi.txt");
+ 
+for (const auto& taxi : taxis) {
+ 
+outFile << taxi;
+ 
+}
+ 
+outFile.close();
+ 
+cout << "New Taxi List :" << endl;
+ 
+taxidisplay(taxis);
+}
+void resetFareInfo(vector<Taxi>& taxis) {
+ 
+taxidisplay(taxis);
+ 
+int serialNumber;
+ 
+cout << "Enter Taxi derial Number to reset Fare Info: ";
+ 
+cin >> serialNumber;
+ 
+if (serialNumber > 0 && serialNumber <= taxis.size()) {
+ 
+taxis[serialNumber - 1].resetFareInfo();
+ 
+ofstream outFile("taxi.txt");
+ 
+for (const auto& taxi : taxis) {
+ 
+outFile << taxi;
+ 
+}
+ 
+outFile.close();
+ 
+cout << "Taxi List after reserting fare info:" << endl;
+ 
+taxidisplay(taxis);
+ 
+} else {
+ 
+cout << "Invalid!" << endl;
+ 
+}
+}
+void addFare(vector<Taxi>& taxis) {
+ 
+taxidisplay(taxis);
+ 
+int serialNumber;
+ 
+double fare;
+ 
+cout << "Please enter Taxi Serial Number for which you want to add totl Fare: ";
+ 
+cin >> serialNumber;
+ 
+cout << "How much do you want to add to Fare Total: ";
+ 
+cin >> fare;
+ 
+if (serialNumber > 0 && serialNumber <= taxis.size()) {
+ 
+taxis[serialNumber - 1].addFare(fare);
+
+ 
+ofstream outFile("taxi.txt");
+ 
+for (const auto& taxi : taxis) {
+ 
+outFile << taxi;
+ 
+}
+ 
+outFile.close();
+ 
+cout << "Taxi List after addding fare:" << endl;
+ 
+taxidisplay(taxis);
+ 
+} else {
+ 
+cout << "Invalid!" << endl;
+ 
+}
+}
+int main() {
+ 
+vector<Taxi> taxis;
+ 
+Taxi taxi_1("Toyota", "Corolla", 2020, 10000, "SR324", 5, "1");
+ 
+Taxi taxi_2("Honda", "Civic", 2022, 23000, "GW581", 5, "2");
+ 
+taxis.back(taxi_1);
+ 
+taxis.back(taxi_2);
+ 
+ofstream outFile("taxi.txt");
+ 
+for (const auto& taxi : taxis) {
+ 
+outFile << taxi;
+ 
+}
+ 
+outFile.close();
+ 
+ifstream inFile("taxi.txt");
+ 
+taxis.clear();
+ 
+Taxi temp("", "", 0, 0, "", 0, "");
+ 
+while (inFile >> temp) {
+ 
+taxis.back(temp);
+ 
+}
+ 
+inFile.close();
+ 
+char cont = 'y';
+ 
+while (cont == 'y' || cont == 'Y') {
+ 
+displayMenu();
+ 
+int choice;
+ 
+cin >> choice;
+ 
+switch (choice) {
+ 
+case 1:
+ 
+cout << "Taxi List is:" << endl;
+ 
+taxidisplay(taxis);
+ 
+break;
+ 
+case 2:
+ 
+newtaxiadding(taxis);
+ 
+break;
+ 
+case 3:
+ 
+resetFareInfo(taxis);
+ 
+break;
+ 
+case 4:
+ 
+addFare(taxis);
+ 
+break;
+ 
+default:
+ 
+cout << "Invalid." << endl;
+ 
+break;
+ 
+}
+ 
+cout << "Do you have another operation to perform? (y/n): ";
+ 
+cin >> cont;
+ 
+}
+ 
+return 0;
